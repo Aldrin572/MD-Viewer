@@ -1,6 +1,6 @@
 {
-  "short_name": "MDEditor",
-  "name": "Markdown Editor Mobile PWA",
+  "short_name": "Writer",
+  "name": "Minimalist Markdown Writer",
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -16,8 +16,8 @@
     }
   ],
   "start_url": "./index.html",
-  "background_color": "#111827",
-  "theme_color": "#111827",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
   "display": "standalone",
   "orientation": "portrait"
 }

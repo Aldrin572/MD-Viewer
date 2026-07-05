@@ -1,8 +1,6 @@
-// Claves para LocalStorage
 const STORAGE_FILES_KEY = 'markdown_pwa_files';
 const STORAGE_CURRENT_KEY = 'markdown_pwa_current_id';
 
-// Estados del sistema
 let files = JSON.parse(localStorage.getItem(STORAGE_FILES_KEY)) || [];
 let currentFileId = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
 let isPreviewMode = false;
@@ -21,18 +19,24 @@ const markdownPreview = document.getElementById('markdown-preview');
 
 const pasteBtn = document.getElementById('paste-btn');
 const toggleViewBtn = document.getElementById('toggle-view-btn');
+const toggleText = document.getElementById('toggle-text');
+const toggleIconContainer = document.getElementById('toggle-icon-container');
+
+// Iconos vectoriales intercambiables
+const EYE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const PEN_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
 
 // --- Control del Panel Lateral ---
 menuBtn.addEventListener('click', () => sidebar.classList.add('open'));
 closeSidebarBtn.addEventListener('click', () => sidebar.classList.remove('open'));
 
 // --- Gestión de Archivos ---
-
-// Inicialización de datos
 function init() {
   if (files.length === 0) {
-    // Si no hay archivos, creamos un archivo por defecto para la primera vez
-    const defaultFile = createNewFileObject('Primer Documento', '# Hola Mundo\n\nEste es tu nuevo editor de **Markdown**.\n\n- Escribe tu código aquí.\n- Usa el botón de **Pegar** para traer textos del portapapeles.\n- Haz clic en **Ver Formato** para previsualizarlo.');
+    const defaultFile = createNewFileObject(
+      'Documento de Guía', 
+      '# Mi Documento Markdown\n\nEste es un entorno de escritura minimalista con soporte fuera de línea.\n\n### Formato de muestra\n\n- **Negritas** para resaltar conceptos.\n- *Itálicas* para notas rápidas.\n- `Bloques de código` integrados.\n\n```javascript\n// Ejemplo de código limpio\nconst app = () => "Moderno y minimalista";\n```\n\nPresiona el botón **Ver Formato** para ver cómo queda renderizado.'
+    );
     files.push(defaultFile);
     currentFileId = defaultFile.id;
     saveToStorage();
@@ -66,16 +70,17 @@ function renderFileList() {
     const li = document.createElement('li');
     li.className = `file-item ${file.id === currentFileId ? 'active' : ''}`;
     li.dataset.id = file.id;
-    li.innerHTML = `<span class="file-title-text">${file.title}</span>`;
+    li.innerHTML = `
+      <svg style="margin-right:0.5rem; flex-shrink: 0;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+      <span class="file-title-text">${file.title}</span>
+    `;
     
     li.addEventListener('click', () => {
       currentFileId = file.id;
       saveToStorage();
       renderFileList();
       loadActiveFile();
-      sidebar.classList.remove('open'); // Cierra barra lateral en móviles
-      
-      // Regresa al modo editor si estaba en previsualización
+      sidebar.classList.remove('open');
       if (isPreviewMode) toggleView();
     });
     
@@ -93,7 +98,7 @@ function loadActiveFile() {
 
 // Crear un nuevo documento
 newFileBtn.addEventListener('click', () => {
-  const newFile = createNewFileObject('Nuevo Documento');
+  const newFile = createNewFileObject('Nuevo Archivo');
   files.push(newFile);
   currentFileId = newFile.id;
   saveToStorage();
@@ -108,11 +113,11 @@ deleteFileBtn.addEventListener('click', () => {
   const activeFile = files.find(f => f.id === currentFileId);
   if (!activeFile) return;
 
-  if (confirm(`¿Estás seguro de eliminar el archivo "${activeFile.title}"?`)) {
+  if (confirm(`¿Deseas eliminar definitivamente el archivo "${activeFile.title}"?`)) {
     files = files.filter(f => f.id !== currentFileId);
     
     if (files.length === 0) {
-      const defaultFile = createNewFileObject('Nuevo Documento');
+      const defaultFile = createNewFileObject('Nuevo Archivo');
       files.push(defaultFile);
       currentFileId = defaultFile.id;
     } else {
@@ -143,7 +148,6 @@ currentFileTitle.addEventListener('input', (e) => {
     activeFile.updatedAt = Date.now();
     saveToStorage();
     
-    // Actualiza el nombre en el panel lateral en tiempo real
     const sidebarItem = document.querySelector(`[data-id="${currentFileId}"] .file-title-text`);
     if (sidebarItem) {
       sidebarItem.textContent = activeFile.title;
@@ -151,17 +155,14 @@ currentFileTitle.addEventListener('input', (e) => {
   }
 });
 
-// --- Funcionalidades Principales ---
+// --- Clipboard & Vista Previa ---
 
-// Pegar desde el portapapeles del dispositivo
+// Pegar desde el portapapeles del dispositivo con compatibilidad HTTP/HTTPS
 pasteBtn.addEventListener('click', async () => {
-  if (isPreviewMode) {
-    // Si está en previsualización, forzamos regresar a la edición para poder pegar
-    toggleView();
-  }
+  if (isPreviewMode) toggleView();
 
   if (!navigator.clipboard || !navigator.clipboard.readText) {
-    alert('Tu navegador o la configuración de seguridad no admite el acceso directo al portapapeles. Prueba a pegar manteniendo pulsada la pantalla.');
+    alert('Tu navegador no permite acceso directo al portapapeles o no está utilizando una conexión segura (HTTPS).');
     return;
   }
 
@@ -171,35 +172,36 @@ pasteBtn.addEventListener('click', async () => {
     const end = markdownInput.selectionEnd;
     const currentText = markdownInput.value;
 
-    // Inserta en la posición actual del cursor
     markdownInput.value = currentText.substring(0, start) + text + currentText.substring(end);
     markdownInput.focus();
     markdownInput.selectionStart = markdownInput.selectionEnd = start + text.length;
 
-    // Disparar evento de input para que autoguarde
     markdownInput.dispatchEvent(new Event('input'));
   } catch (err) {
-    console.error('No se pudo leer del portapapeles:', err);
-    alert('No se pudo acceder al portapapeles. Asegúrate de otorgar los permisos de acceso.');
+    console.error('No se pudo acceder al portapapeles:', err);
+    alert('No se otorgaron permisos para leer el portapapeles.');
   }
 });
 
-// Alternar entre editor y vista previa estructurada
+// Alternar entre editor y vista previa
 function toggleView() {
   isPreviewMode = !isPreviewMode;
   
   if (isPreviewMode) {
-    // Compila usando la librería marked.js
     const compiledHtml = marked.parse(markdownInput.value || '');
     markdownPreview.innerHTML = compiledHtml;
     
     markdownInput.classList.add('hidden');
     markdownPreview.classList.remove('hidden');
-    toggleViewBtn.textContent = '✏️ Editar';
+    
+    toggleText.textContent = 'Editar';
+    toggleIconContainer.innerHTML = PEN_ICON;
   } else {
     markdownInput.classList.remove('hidden');
     markdownPreview.classList.add('hidden');
-    toggleViewBtn.textContent = '👁️ Ver Formato';
+    
+    toggleText.textContent = 'Ver Formato';
+    toggleIconContainer.innerHTML = EYE_ICON;
   }
 }
 
@@ -209,10 +211,9 @@ toggleViewBtn.addEventListener('click', toggleView);
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker registrado correctamente.', reg.scope))
-      .catch(err => console.error('Error al registrar el Service Worker.', err));
+      .then(reg => console.log('SW registrado', reg.scope))
+      .catch(err => console.error('Error al registrar SW', err));
   });
 }
 
-// Iniciar app
 init();
