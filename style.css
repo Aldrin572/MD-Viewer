@@ -1,0 +1,289 @@
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f4f6;
+  --bg-sidebar: #1f2937;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --text-sidebar: #f3f4f6;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --border: #e5e7eb;
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --bottom-bar-height: 60px;
+}
+
+/* Modo oscuro automático */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --border: #374151;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+/* Barra lateral móvil-first */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100%;
+  background-color: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  transition: left 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-right: 1px solid var(--border);
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sidebar-header h2 {
+  font-size: 1.25rem;
+}
+
+/* Contenido de la barra lateral */
+.file-list {
+  list-style: none;
+  overflow-y: auto;
+  margin-top: 1rem;
+  flex-grow: 1;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.file-item:hover, .file-item.active {
+  background-color: var(--accent);
+}
+
+.file-title-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+
+/* Área principal */
+main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  gap: 0.5rem;
+}
+
+.title-input {
+  flex-grow: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px dashed transparent;
+}
+
+.title-input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+/* Áreas de escritura y previsualización */
+.editor-container {
+  flex-grow: 1;
+  position: relative;
+  overflow-y: auto;
+  margin-bottom: var(--bottom-bar-height);
+}
+
+#markdown-input, .preview-area {
+  width: 100%;
+  height: 100%;
+  border: none;
+  resize: none;
+  padding: 1.2rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+#markdown-input {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+#markdown-input:focus {
+  outline: none;
+}
+
+.preview-area {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-y: auto;
+}
+
+.preview-area h1, .preview-area h2, .preview-area h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.preview-area p {
+  margin-bottom: 0.8rem;
+}
+
+.preview-area code {
+  background-color: var(--bg-secondary);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.preview-area pre {
+  background-color: var(--bg-secondary);
+  padding: 0.8rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+/* Barra inferior móvil */
+.action-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-bar-height);
+  border-top: 1px solid var(--border);
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0.5rem;
+}
+
+/* Botones y estilos de control */
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+}
+
+.btn-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-action {
+  flex-grow: 1;
+  max-width: 45%;
+  text-align: center;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.4rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.icon-btn:hover {
+  background-color: var(--bg-secondary);
+}
+
+.sidebar .icon-btn {
+  color: var(--text-sidebar);
+}
+
+.danger-btn {
+  color: var(--danger);
+}
+
+.danger-btn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Responsividad en Escritorio */
+@media (min-width: 768px) {
+  .sidebar {
+    position: static;
+    left: 0;
+    box-shadow: none;
+  }
+  
+  #menu-btn, #close-sidebar-btn {
+    display: none;
+  }
+}
