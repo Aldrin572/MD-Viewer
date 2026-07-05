@@ -177,6 +177,7 @@ main {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   overflow-y: auto;
+  overflow-wrap: break-word;
 }
 
 .preview-area h1 { font-size: 1.6rem; font-weight: 700; margin: 1.5rem 0 0.75rem 0; letter-spacing: -0.025em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem; }
