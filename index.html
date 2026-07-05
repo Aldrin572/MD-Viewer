@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MD Editor PWA</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111827">
+  <!-- Marked.js para compilar Markdown a HTML de forma rápida -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- Panel lateral (Menú de archivos) -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h2>Documentos</h2>
+        <button id="close-sidebar-btn" class="icon-btn" aria-label="Cerrar menú">✕</button>
+      </div>
+      <button id="new-file-btn" class="btn btn-primary">+ Nuevo Archivo</button>
+      <ul id="file-list" class="file-list"></ul>
+    </aside>
+
+    <!-- Contenedor Principal -->
+    <main id="main-content">
+      <header class="app-header">
+        <button id="menu-btn" class="icon-btn" aria-label="Abrir menú">☰</button>
+        <input type="text" id="current-file-title" class="title-input" value="Sin título" placeholder="Nombre del archivo">
+        <button id="delete-file-btn" class="icon-btn danger-btn" aria-label="Eliminar archivo">🗑️</button>
+      </header>
+
+      <!-- Áreas de trabajo -->
+      <section class="editor-container">
+        <!-- Input para Markdown -->
+        <textarea id="markdown-input" placeholder="Escribe tu código Markdown aquí..."></textarea>
+        <!-- Vista previa de HTML (oculta por defecto) -->
+        <div id="markdown-preview" class="preview-area hidden"></div>
+      </section>
+
+      <!-- Barra de acción inferior (Fácil acceso móvil) -->
+      <footer class="action-bar">
+        <button id="paste-btn" class="btn btn-action">📋 Pegar</button>
+        <button id="toggle-view-btn" class="btn btn-action btn-secondary">👁️ Ver Formato</button>
+      </footer>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
